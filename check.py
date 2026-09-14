@@ -1,4 +1,4 @@
-import os, re, time, urllib.request
+import json, os, re, time, urllib.request
 
 URL = "https://www.utvs.cvut.cz/vyuka/povinna-volitelna/orientacni-beh"
 NTFY = "https://ntfy.sh/" + os.environ["NTFY_TOPIC"]  # subscribe to this topic in the ntfy app
@@ -16,6 +16,11 @@ def fetch():
 
 def notify(msg):
     urllib.request.urlopen(urllib.request.Request(NTFY, data=msg.encode(), headers={"Priority": "high"}), timeout=30)
+    if os.environ.get("RESEND_API_KEY"):
+        body = json.dumps({"from": os.environ.get("EMAIL_FROM", "onboarding@resend.dev"),
+                           "to": [os.environ["EMAIL_TO"]], "subject": msg, "text": msg}).encode()
+        urllib.request.urlopen(urllib.request.Request("https://api.resend.com/emails", data=body,
+            headers={"Authorization": "Bearer " + os.environ["RESEND_API_KEY"], "Content-Type": "application/json"}), timeout=30)
 
 
 if __name__ == "__main__":
