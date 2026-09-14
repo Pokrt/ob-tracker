@@ -20,7 +20,7 @@ def notify(msg):
         body = json.dumps({"from": os.environ.get("EMAIL_FROM", "onboarding@resend.dev"),
                            "to": [os.environ["EMAIL_TO"]], "subject": msg, "text": msg}).encode()
         urllib.request.urlopen(urllib.request.Request("https://api.resend.com/emails", data=body,
-            headers={"Authorization": "Bearer " + os.environ["RESEND_API_KEY"], "Content-Type": "application/json"}), timeout=30)
+            headers={"Authorization": "Bearer " + os.environ["RESEND_API_KEY"], "Content-Type": "application/json", "User-Agent": "ob-tracker"}), timeout=30)
 
 
 if __name__ == "__main__":
